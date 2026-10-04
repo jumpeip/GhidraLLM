@@ -1,0 +1,41 @@
+// Builds the GhidraLLM extension for a given Ghidra installation.
+//
+//   set GHIDRA_INSTALL_DIR=C:\path\to\ghidra_12.1.4_PUBLIC        (Windows)
+//   export GHIDRA_INSTALL_DIR=/path/to/ghidra_12.1.4_PUBLIC       (Linux/macOS)
+//   gradle
+//
+// or: gradle -PGHIDRA_INSTALL_DIR=<path>
+// The installable zip is written to dist/.
+
+//----------------------START "DO NOT MODIFY" SECTION------------------------------
+def ghidraInstallDir
+
+if (System.env.GHIDRA_INSTALL_DIR) {
+	ghidraInstallDir = System.env.GHIDRA_INSTALL_DIR
+}
+else if (project.hasProperty("GHIDRA_INSTALL_DIR")) {
+	ghidraInstallDir = project.getProperty("GHIDRA_INSTALL_DIR")
+}
+else {
+	ghidraInstallDir = "<REPLACE>"
+}
+
+task distributeExtension {
+	group = "Ghidra"
+
+	apply from: new File(ghidraInstallDir).getCanonicalPath() + "/support/buildExtension.gradle"
+	dependsOn ':buildExtension'
+}
+//----------------------END "DO NOT MODIFY" SECTION-------------------------------
+
+repositories {
+}
+
+dependencies {
+	// Gson ships with Ghidra (Framework/Generic), so no extra jars are needed.
+}
+
+buildExtension.exclude 'tests/**'
+buildExtension.exclude 'tools/**'
+buildExtension.exclude '.idea/**'
+buildExtension.exclude '.vscode/**'
